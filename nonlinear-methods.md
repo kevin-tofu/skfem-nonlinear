@@ -38,6 +38,7 @@ quadrature point に補間して弱形式を再アセンブルできる。この
 | 移動領域 | ALEメッシュ移動 | 調和／擬似弾性拡張と要素品質監視 | `ale-mesh-motion/` |
 | 移動領域上の輸送 | ALE移流拡散 | 相対速度 \(u_f-w_m\) とGCLの基礎 | `ale-advection-diffusion/` |
 | 幾何保存 | ALE-GCL | Jacobian時間更新と総量保存 | `ale-geometric-conservation/` |
+| 移動領域流体 | ALE Navier--Stokes | 相対移流、Taylor--Hood、時刻内Picard | `ale-navier-stokes/` |
 
 ## 基本パターン
 
@@ -204,6 +205,26 @@ ALE写像の要素Jacobian \(J_m\) とメッシュ速度 \(w_m\) が満たす幾
 場合を比較する。前者は総量を保存するが、後者は領域体積の変化をそのまま
 質量の生成・消滅として数えてしまう。これはALE Navier--Stokesの保存形時間
 離散化を検証する前段になる。
+
+### `ale-navier-stokes/`
+
+面積平均を変えない波形で上壁を上下運動させ、非圧縮Navier--Stokes方程式を
+移動領域上で解く。速度--圧力にはTaylor--Hood \(P_2/P_1\) 要素を使い、
+後退Euler時間離散化後の運動量式
+
+\[
+\frac{u^{n+1}-u^n}{\Delta t}
++((u^{n+1}-w_m^{n+1})\cdot\nabla)u^{n+1}
+-\nu\Delta u^{n+1}+\nabla p^{n+1}=0
+\]
+
+を時刻内Picard反復で線形化する。壁では流体速度をメッシュ速度に一致させ、
+圧力は一点固定して鞍点系のnullspaceを除く。
+
+正しいALE相対移流と、比較のためメッシュ速度を移流項から省略した計算を
+並走させる。両者は同じ移動壁境界条件と変形メッシュを使うため、速度・圧力
+応答の差は \(-w_m\cdot\nabla u\) の欠落によるものである。結果画像には最大
+変形時の速度・圧力、運動エネルギー、圧力履歴、Picard反復数を示す。
 
 ### `picard-nonlinear-diffusion/`
 
@@ -548,4 +569,5 @@ python generalized-alpha-impact/main.py
 python ale-mesh-motion/main.py
 python ale-advection-diffusion/main.py
 python ale-geometric-conservation/main.py
+python ale-navier-stokes/main.py
 ```
