@@ -34,6 +34,7 @@ quadrature point に補間して弱形式を再アセンブルできる。この
 | 荷重方向非線形 | follower load | 変形依存外力と外力接線 | `follower-load/` |
 | 動的非線形 | 有限ひずみ振動 | Newmark法と時刻内Newton法 | `nonlinear-elastodynamics/` |
 | 動的非滑らか | 落下衝突 | Newmark法と接触／離脱 | `dynamic-impact-contact/` |
+| 数値減衰 | generalized-\(\alpha\)衝突 | 高周波スペクトル制御 | `generalized-alpha-impact/` |
 
 ## 基本パターン
 
@@ -434,6 +435,21 @@ Newmark平均加速度法で解く。床とのgapが負のときだけpenalty接
 衝突形状、重心運動、接触力、最小gap、運動・ひずみ・重力・接触エネルギー、
 時刻内反復数を示す。
 
+### `generalized-alpha-impact/`
+
+1次元有限ひずみ弾性棒の落下衝突を、Newmark平均加速度法と
+generalized-\(\alpha\)法で比較する。指定した高周波スペクトル半径
+\(\rho_\infty\) から
+
+\[
+\alpha_m=\frac{2\rho_\infty-1}{\rho_\infty+1},\qquad
+\alpha_f=\frac{\rho_\infty}{\rho_\infty+1}
+\]
+
+を定める。\(\rho_\infty\) を小さくすると衝突で励起される非物理的な高周波を
+強く減衰できる一方、アルゴリズムエネルギーも失われる。結果画像は反発運動、
+接触力、位相軌道、エネルギー減衰、接触力スペクトル、Newton反復数を示す。
+
 ## 実務上の確認項目
 
 1. 残差ノルムと増分ノルムの両方を監視する。
@@ -472,4 +488,5 @@ python elastoplastic-indentation/main.py
 python follower-load/main.py
 python nonlinear-elastodynamics/main.py
 python dynamic-impact-contact/main.py
+python generalized-alpha-impact/main.py
 ```
