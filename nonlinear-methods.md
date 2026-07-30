@@ -33,6 +33,7 @@ quadrature point に補間して弱形式を再アセンブルできる。この
 | 複合非線形 | 弾塑性押込み | J2 return mappingと接触 | `elastoplastic-indentation/` |
 | 荷重方向非線形 | follower load | 変形依存外力と外力接線 | `follower-load/` |
 | 動的非線形 | 有限ひずみ振動 | Newmark法と時刻内Newton法 | `nonlinear-elastodynamics/` |
+| 動的非滑らか | 落下衝突 | Newmark法と接触／離脱 | `dynamic-impact-contact/` |
 
 ## 基本パターン
 
@@ -425,6 +426,14 @@ M a_{n+1}+f_{\rm int}(u_{n+1})=f_{\rm ext}(t_{n+1})
 位相軌道、運動・ひずみエネルギー、仕事とのエネルギー収支、時刻内Newton
 反復数を示す。
 
+### `dynamic-impact-contact/`
+
+有限変形neo-Hookeanブロックを重力下で落下させ、剛体床との衝突・離脱・反発を
+Newmark平均加速度法で解く。床とのgapが負のときだけpenalty接触残差と接線を
+加えるため、各時刻のNewton反復中にもactive contactが変化する。結果画像は
+衝突形状、重心運動、接触力、最小gap、運動・ひずみ・重力・接触エネルギー、
+時刻内反復数を示す。
+
 ## 実務上の確認項目
 
 1. 残差ノルムと増分ノルムの両方を監視する。
@@ -462,4 +471,5 @@ python frictional-contact/main.py
 python elastoplastic-indentation/main.py
 python follower-load/main.py
 python nonlinear-elastodynamics/main.py
+python dynamic-impact-contact/main.py
 ```
