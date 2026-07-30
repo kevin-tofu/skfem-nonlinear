@@ -36,6 +36,7 @@ quadrature point に補間して弱形式を再アセンブルできる。この
 | 動的非滑らか | 落下衝突 | Newmark法と接触／離脱 | `dynamic-impact-contact/` |
 | 数値減衰 | generalized-\(\alpha\)衝突 | 高周波スペクトル制御 | `generalized-alpha-impact/` |
 | 移動領域 | ALEメッシュ移動 | 調和／擬似弾性拡張と要素品質監視 | `ale-mesh-motion/` |
+| 移動領域上の輸送 | ALE移流拡散 | 相対速度 \(u_f-w_m\) とGCLの基礎 | `ale-advection-diffusion/` |
 
 ## 基本パターン
 
@@ -165,6 +166,25 @@ ALE写像は \(\chi(X,t)=X+d_m(X,t)\)、メッシュ速度は
 独立に検証する。最大振幅では調和拡張に局所的な要素反転が生じる一方、
 擬似弾性拡張は正のJacobianを維持し、移動法の選択が計算可能範囲を左右する
 ことも可視化する。
+
+### `ale-advection-diffusion/`
+
+`ale-mesh-motion/` の擬似弾性変位を時間依存にし、その上でスカラー輸送
+
+\[
+\left.\frac{\partial c}{\partial t}\right|_X
+ (u_f-w_m)\cdot\nabla c-D\Delta c=Q
+\]
+
+を後退Euler法で解く。ここで \(X\) は参照メッシュ座標、\(w_m\) はメッシュ
+速度である。物理空間で静止したmanufactured solutionを選ぶと、移動節点から
+見える時間変化 \(w_m\cdot\nabla c\) と相対移流項の
+\(-w_m\cdot\nabla c\) が相殺する。
+
+同じ問題を正しい相対速度と、誤って \(w_m=0\) とした式で解き、誤差を直接
+比較する。これはALE流体実装へ進む前の最小検証であり、次の段階では保存形
+時間離散化が一様場を厳密に保存する幾何保存則
+(Geometric Conservation Law; GCL) も確認する必要がある。
 
 ### `picard-nonlinear-diffusion/`
 
@@ -507,4 +527,5 @@ python nonlinear-elastodynamics/main.py
 python dynamic-impact-contact/main.py
 python generalized-alpha-impact/main.py
 python ale-mesh-motion/main.py
+python ale-advection-diffusion/main.py
 ```
