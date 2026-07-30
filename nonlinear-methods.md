@@ -35,6 +35,7 @@ quadrature point に補間して弱形式を再アセンブルできる。この
 | 動的非線形 | 有限ひずみ振動 | Newmark法と時刻内Newton法 | `nonlinear-elastodynamics/` |
 | 動的非滑らか | 落下衝突 | Newmark法と接触／離脱 | `dynamic-impact-contact/` |
 | 数値減衰 | generalized-\(\alpha\)衝突 | 高周波スペクトル制御 | `generalized-alpha-impact/` |
+| 移動領域 | ALEメッシュ移動 | 調和／擬似弾性拡張と要素品質監視 | `ale-mesh-motion/` |
 
 ## 基本パターン
 
@@ -148,6 +149,22 @@ current working directoryには依存しない。
 \(J(u)d\) を比較する。有限差分刻みに対する誤差も結果画像へ含める。
 
 ## 各サンプル
+
+### `ale-mesh-motion/`
+
+上側の移動界面
+\(d_y=-A(t)\sin^2(\pi x)\) を内部の流体メッシュへ伝えるALE
+(Arbitrary Lagrangian--Eulerian) メッシュ移動を扱う。界面変位の調和拡張
+\(-\Delta d_m=0\) と、メッシュを仮想的な線形弾性体とみなす擬似弾性拡張を
+比較する。
+
+ALE写像は \(\chi(X,t)=X+d_m(X,t)\)、メッシュ速度は
+\(w_m=\partial\chi/\partial t\) である。流体の移流速度は物理速度そのもの
+ではなく \(u_f-w_m\) になる。この例は流体方程式をまだ解かず、FSI計算の
+前段となる変位・速度の生成と、要素Jacobian比および最小角による品質監視を
+独立に検証する。最大振幅では調和拡張に局所的な要素反転が生じる一方、
+擬似弾性拡張は正のJacobianを維持し、移動法の選択が計算可能範囲を左右する
+ことも可視化する。
 
 ### `picard-nonlinear-diffusion/`
 
@@ -489,4 +506,5 @@ python follower-load/main.py
 python nonlinear-elastodynamics/main.py
 python dynamic-impact-contact/main.py
 python generalized-alpha-impact/main.py
+python ale-mesh-motion/main.py
 ```
