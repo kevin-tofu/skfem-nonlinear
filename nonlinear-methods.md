@@ -32,6 +32,7 @@ quadrature point に補間して弱形式を再アセンブルできる。この
 | 摩擦・履歴 | Coulomb摩擦接触 | stick/slip return mapping | `frictional-contact/` |
 | 複合非線形 | 弾塑性押込み | J2 return mappingと接触 | `elastoplastic-indentation/` |
 | 荷重方向非線形 | follower load | 変形依存外力と外力接線 | `follower-load/` |
+| 動的非線形 | 有限ひずみ振動 | Newmark法と時刻内Newton法 | `nonlinear-elastodynamics/` |
 
 ## 基本パターン
 
@@ -409,6 +410,21 @@ t(u)=-P\,\frac{F(u)e_y}{|F(u)e_y|}
 全接線は一般に非対称になる。同じ荷重履歴でdead/follower応答を比較し、
 結果画像は変形、荷重変位曲線、先端軌跡、内力・外力を合わせた接線検証を示す。
 
+### `nonlinear-elastodynamics/`
+
+有限変形neo-Hookean cantileverへ半正弦パルスを加え、その後の自由振動を
+Newmark平均加速度法で解く。各時刻では
+
+\[
+M a_{n+1}+f_{\rm int}(u_{n+1})=f_{\rm ext}(t_{n+1})
+\]
+
+をNewton法で満たし、有効接線
+\(M/(\beta\Delta t^2)+K_{\rm tan}(u_{n+1})\) を使う。同じ質量行列と初期接線
+による線形動解析も並走させる。結果画像は変形スナップショット、先端振動、
+位相軌道、運動・ひずみエネルギー、仕事とのエネルギー収支、時刻内Newton
+反復数を示す。
+
 ## 実務上の確認項目
 
 1. 残差ノルムと増分ノルムの両方を監視する。
@@ -445,4 +461,5 @@ python phase-field-fracture/main.py
 python frictional-contact/main.py
 python elastoplastic-indentation/main.py
 python follower-load/main.py
+python nonlinear-elastodynamics/main.py
 ```
