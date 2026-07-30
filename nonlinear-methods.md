@@ -39,6 +39,7 @@ quadrature point に補間して弱形式を再アセンブルできる。この
 | 移動領域上の輸送 | ALE移流拡散 | 相対速度 \(u_f-w_m\) とGCLの基礎 | `ale-advection-diffusion/` |
 | 幾何保存 | ALE-GCL | Jacobian時間更新と総量保存 | `ale-geometric-conservation/` |
 | 移動領域流体 | ALE Navier--Stokes | 相対移流、Taylor--Hood、時刻内Picard | `ale-navier-stokes/` |
+| 流体構造連成 | 分割型ALE-FSI | Dirichlet--Neumann強連成と界面緩和 | `partitioned-ale-fsi/` |
 
 ## 基本パターン
 
@@ -225,6 +226,28 @@ ALE写像の要素Jacobian \(J_m\) とメッシュ速度 \(w_m\) が満たす幾
 並走させる。両者は同じ移動壁境界条件と変形メッシュを使うため、速度・圧力
 応答の差は \(-w_m\cdot\nabla u\) の欠落によるものである。結果画像には最大
 変形時の速度・圧力、運動エネルギー、圧力履歴、Picard反復数を示す。
+
+### `partitioned-ale-fsi/`
+
+上壁の変位を
+\(d_s(x,t)=q(t)\sin(2\pi x)e_y\) という一つの構造モードで表し、質量・減衰・
+剛性を持つ構造方程式
+
+\[
+m_s\ddot q+c_s\dot q+k_sq=F_f
+\]
+
+とALE Navier--StokesをDirichlet--Neumann分割法で連成する。構造変位と速度を
+流体の移動境界条件として与え、流体圧力をモード形状へ射影した一般化力
+\(F_f\) を構造へ返す。モードの面積平均はゼロなので、閉じた非圧縮流体領域
+の体積を変えない。
+
+各時刻では「ALEメッシュ更新 → 流体Picard反復 → 圧力荷重 → 構造更新」を
+界面変位が収束するまで繰り返す。単純なDirichlet--Neumann反復は流体密度に
+対して構造が軽いとadded-mass不安定性を起こすため、界面変位へ緩和を適用
+する。この例は固定緩和係数を使うが、実務ではAitken動的緩和、Robin境界条件、
+またはmonolithic法が有力である。結果画像には流体場、壁の振動、圧力仕事と
+エネルギー交換、入れ子になった連成／流体反復数を示す。
 
 ### `picard-nonlinear-diffusion/`
 
@@ -570,4 +593,5 @@ python ale-mesh-motion/main.py
 python ale-advection-diffusion/main.py
 python ale-geometric-conservation/main.py
 python ale-navier-stokes/main.py
+python partitioned-ale-fsi/main.py
 ```
