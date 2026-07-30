@@ -37,6 +37,7 @@ quadrature point に補間して弱形式を再アセンブルできる。この
 | 数値減衰 | generalized-\(\alpha\)衝突 | 高周波スペクトル制御 | `generalized-alpha-impact/` |
 | 移動領域 | ALEメッシュ移動 | 調和／擬似弾性拡張と要素品質監視 | `ale-mesh-motion/` |
 | 移動領域上の輸送 | ALE移流拡散 | 相対速度 \(u_f-w_m\) とGCLの基礎 | `ale-advection-diffusion/` |
+| 幾何保存 | ALE-GCL | Jacobian時間更新と総量保存 | `ale-geometric-conservation/` |
 
 ## 基本パターン
 
@@ -185,6 +186,24 @@ ALE写像は \(\chi(X,t)=X+d_m(X,t)\)、メッシュ速度は
 比較する。これはALE流体実装へ進む前の最小検証であり、次の段階では保存形
 時間離散化が一様場を厳密に保存する幾何保存則
 (Geometric Conservation Law; GCL) も確認する必要がある。
+
+### `ale-geometric-conservation/`
+
+ALE写像の要素Jacobian \(J_m\) とメッシュ速度 \(w_m\) が満たす幾何保存則
+
+\[
+\dot J_m=J_m\nabla_x\cdot w_m
+\]
+
+を各三角形で検証する。時間区間内で節点軌跡を線形補間すると、区間中央の
+計量を使った式は面積の差分と丸め誤差範囲で一致する。計量を終端だけで評価
+した非整合な式との時間刻み依存性も比較する。
+
+さらに、移動メッシュとともに運ばれるセル量について
+\(\rho_K^{n+1}|K^{n+1}|=\rho_K^n|K^n|\) と更新した場合と、密度係数を固定した
+場合を比較する。前者は総量を保存するが、後者は領域体積の変化をそのまま
+質量の生成・消滅として数えてしまう。これはALE Navier--Stokesの保存形時間
+離散化を検証する前段になる。
 
 ### `picard-nonlinear-diffusion/`
 
@@ -528,4 +547,5 @@ python dynamic-impact-contact/main.py
 python generalized-alpha-impact/main.py
 python ale-mesh-motion/main.py
 python ale-advection-diffusion/main.py
+python ale-geometric-conservation/main.py
 ```
